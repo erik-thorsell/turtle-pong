@@ -12,6 +12,18 @@ window.bgcolor("black")
 window.setup(width=800, height=600)
 # window.tracer(0)  # Turns off the screen updates
 
+# Score
+score = turtle.Turtle()
+score.speed(0)
+score.color("white")
+score.penup()
+score.hideturtle()
+score.goto(0, 260)
+def change_score(p1, p2):
+    score.clear()
+    score.write(f"{p1} | {p2}", align="center", font=("Courier", 24, "normal"))
+change_score(0, 0)
+
 def setupPlayer(player, x):
     player.speed(0)  # max speed
     player.shape("square")
@@ -23,10 +35,12 @@ def setupPlayer(player, x):
 # Player 1
 player1 = turtle.Turtle()
 setupPlayer(player1, -350)
+scorep1 = 0
 
 # Player 2
 player2 = turtle.Turtle()
 setupPlayer(player2, 350)
+scorep2 = 0
 
 # Ball
 def ball():
@@ -61,7 +75,10 @@ window.onkeypress(lambda: down(player2), "Down")
 
 # Main game loop
 last_time = time.time_ns()
+last_scorep1 = 0
+last_scorep2 = 0
 def game_loop():
+    global scorep1, scorep2, last_scorep1, last_scorep2
     global last_time
     # Move the ball using deltatime
     for ball in balls:
@@ -86,10 +103,18 @@ def game_loop():
         if ball.xcor() > 390:
             ball.goto(0, 0)  # Reset the ball position
             ball.dx *= -1  # Reverse the x direction
+            scorep1 += 1
+        
         if ball.xcor() < -390:
             ball.goto(0, 0)
             ball.dx *= -1
+            scorep2 += 1
 
+    # Update the score if it has changed
+    if scorep1 != last_scorep1 or scorep2 != last_scorep2:
+        last_scorep1 = scorep1
+        last_scorep2 = scorep2
+        change_score(scorep1, scorep2)
     last_time = time.time_ns()
     window.update()
     window.ontimer(game_loop, 10)  # Call again after 10 ms
